@@ -5,6 +5,7 @@ import { OrdersController } from './orders.controller';
 import { Order, OrderSchema } from '../schemas/order.schema';
 import { OrderItem, OrderItemSchema } from '../schemas/order-item.schema';
 import { Counter, CounterSchema } from '../schemas/counter.schema';
+import { TablesModule } from '../tables/tables.module';
 
 @Module({
   imports: [
@@ -12,7 +13,8 @@ import { Counter, CounterSchema } from '../schemas/counter.schema';
       { name: Order.name, schema: OrderSchema },
       { name: OrderItem.name, schema: OrderItemSchema },
       { name: Counter.name, schema: CounterSchema }
-    ])
+    ]),
+    TablesModule,
   ],
   controllers: [OrdersController],
   providers: [OrdersService],

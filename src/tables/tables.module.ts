@@ -13,5 +13,6 @@ import { Table, TableSchema } from '../schemas/table.schema';
   ],
   controllers: [TablesController],
   providers: [TablesService],
+  exports: [TablesService],
 })
 export class TablesModule { }

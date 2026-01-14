@@ -60,6 +60,20 @@ export class TablesService {
     return updatedTable;
   }
 
+  async updateStatus(tableId: number, status: string) {
+    const updatedTable = await this.tableModel.findOneAndUpdate(
+      { tableId: tableId }, // Pangitaa ang table gamit ang ID
+      { $set: { status: status } }, // I-update ang status (Occupied o Available)
+      { new: true }
+    ).exec();
+
+    if (!updatedTable) {
+      throw new NotFoundException(`Table #${tableId} not found.`);
+    }
+
+    return updatedTable;
+  }
+
   async remove(tableId: number) {
     const result = await this.tableModel.deleteOne({ tableId }).exec();
     if (result.deletedCount === 0) {

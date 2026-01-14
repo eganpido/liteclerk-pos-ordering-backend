@@ -1,12 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // I-secure nato
 
+@UseGuards(JwtAuthGuard) // Tanang orders kinahanglan naay login/token
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) { }
 
+  // 1. Tibuok Order
   @Post()
   create(@Body() createOrderDto: CreateOrderDto) {
     return this.ordersService.create(createOrderDto);
@@ -22,31 +24,23 @@ export class OrdersController {
     return this.ordersService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.ordersService.update(+id, updateOrderDto);
-  }
-
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.ordersService.remove(+id);
   }
 
-  @Post(':orderId/item')
-  addOrderItem(
-    @Param('orderId') orderId: string,
-    @Body() itemData: any
+  // 2. Specific Order Items (Diri nato i-adjust ang paths)
+
+  @Patch('item/:orderItemId') // Gigamitan og 'item/' prefix para dili mag-conflict sa Order update
+  updateItem(
+    @Param('orderItemId') orderItemId: string,
+    @Body() updateData: any
   ) {
-    return this.ordersService.createOrderItem(+orderId, itemData);
+    return this.ordersService.updateOrderItem(+orderItemId, updateData);
   }
 
-  @Patch(':id')
-  updateOrderItem(@Param('id') id: string, @Body() updateOrderDto: any) {
-    return this.ordersService.update(+id, updateOrderDto);
-  }
-
-  @Delete(':id')
-  removeOrderItem(@Param('id') id: string) {
-    return this.ordersService.remove(+id);
+  @Delete('item/:orderItemId') // Gigamitan og 'item/' prefix
+  removeItem(@Param('orderItemId') orderItemId: string) {
+    return this.ordersService.removeOrderItem(+orderItemId);
   }
 }

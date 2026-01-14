@@ -17,6 +17,9 @@ export class Table extends Document {
 
     @Prop()
     sortNumber: number;
+
+    @Prop({ default: 'Available' })
+    status: string;
 }
 
 export const TableSchema = SchemaFactory.createForClass(Table);
