@@ -18,7 +18,7 @@ export class Table extends Document {
     @Prop()
     sortNumber: number;
 
-    @Prop({ default: 'Available' })
+    @Prop({ default: 'Vacant' })
     status: string;
 }
 

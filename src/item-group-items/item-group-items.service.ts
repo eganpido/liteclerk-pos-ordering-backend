@@ -47,7 +47,7 @@ export class ItemGroupItemsService {
           itemGroupItemId: 1,
           itemGroupId: 1,
           itemId: 1,
-          description: '$itemDetails.itemDescription',
+          itemDescription: '$itemDetails.itemDescription',
           price: '$itemDetails.price',
           isLocked: '$itemDetails.isLocked'
         }

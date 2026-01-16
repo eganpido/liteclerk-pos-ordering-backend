@@ -15,6 +15,9 @@ export class Order extends Document {
     @Prop({ required: true })
     tableId: number;
 
+    @Prop({ required: true, unique: true })
+    orderNumber: string;
+
     @Prop({ required: true, default: Date.now })
     orderDate: Date;
 
@@ -23,6 +26,9 @@ export class Order extends Document {
 
     @Prop({ default: 'false' })
     isLocked: boolean;
+
+    @Prop({ default: 'false' })
+    isBilledOut: boolean;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

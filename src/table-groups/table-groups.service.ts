@@ -40,20 +40,17 @@ export class TableGroupsService {
 
   async findWithTables(tableGroupId: number) {
     return this.tableGroupModel.aggregate([
-      // 1. Pangitaa ang piho nga Table Group
       { $match: { tableGroupId: tableGroupId } },
 
-      // 2. I-join ang 'tables' collection
       {
         $lookup: {
-          from: 'tables',           // Ang ngalan sa imong collection sa DB
+          from: 'tables',
           localField: 'tableGroupId',
           foreignField: 'tableGroupId',
-          as: 'tables'              // Ang array field nga sudlanan sa mga tables
+          as: 'tables'
         }
       },
 
-      // 3. (Optional) I-sort ang mga tables sa sulod base sa sortNumber
       {
         $addFields: {
           tables: {

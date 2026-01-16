@@ -9,11 +9,11 @@ import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
-    ConfigModule, // <--- KINI ANG CULPRIT! I-add ni diri.
+    ConfigModule,
     UsersModule,
     PassportModule,
     JwtModule.registerAsync({
-      imports: [ConfigModule], // Para ra ni sa JwtModule secret
+      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET') || 'default_fallback_secret',

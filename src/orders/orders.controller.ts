@@ -30,6 +30,16 @@ export class OrdersController {
   }
 
   // 2. Specific Order Items (Diri nato i-adjust ang paths)
+  @Post('item')
+  async addOrderItem(@Body() orderItemDto: any) {
+    return this.ordersService.createOrderItem(orderItemDto);
+  }
+
+  // I-add usab kini aron makuha ang tanang items sa usa ka order
+  @Get(':id/items')
+  async getOrderItems(@Param('id') id: string) {
+    return this.ordersService.findItemsByOrderId(+id);
+  }
 
   @Patch('item/:orderItemId') // Gigamitan og 'item/' prefix para dili mag-conflict sa Order update
   updateItem(
@@ -42,5 +52,10 @@ export class OrdersController {
   @Delete('item/:orderItemId') // Gigamitan og 'item/' prefix
   removeItem(@Param('orderItemId') orderItemId: string) {
     return this.ordersService.removeOrderItem(+orderItemId);
+  }
+
+  @Get('active/:tableId')
+  async getActive(@Param('tableId') tableId: number) {
+    return this.ordersService.findActiveByTable(tableId);
   }
 }

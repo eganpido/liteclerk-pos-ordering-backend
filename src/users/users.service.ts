@@ -46,10 +46,7 @@ export class UsersService {
     return this.userModel.find().exec();
   }
 
-  // I-add ni sa sulod sa imong UsersService class
   async findOneByUsername(username: string): Promise<User | null> {
-    // Gigamit nato ang .select('+password') aron masiguro nga makuha ang hashed password
-    // bisan pa og naka set kini as select: false sa schema.
     const user = await this.userModel
       .findOne({ username })
       .select('+password')

@@ -41,17 +41,36 @@ export class OrdersService {
     try {
       const { orderData, items } = createOrderDto;
 
+      // 1. Pangitaon ang pinaka-ulahing Order base sa orderNumber (descending)
+      const lastOrder = await this.orderModel
+        .findOne({}, { orderNumber: 1 }) // Kuhaon ra ang orderNumber field
+        .sort({ orderNumber: -1 })       // Sort: pinaka-dako/pinaka-ulahing number
+        .exec();
+
+      let nextNumber = 1; // Default sugod kung wala pay order sa DB
+
+      if (lastOrder && lastOrder.orderNumber) {
+        // I-convert ang string "0000000001" ngadto sa number 1, unya pun-an og 1
+        nextNumber = parseInt(lastOrder.orderNumber, 10) + 1;
+      }
+
+      // 2. I-format balik ngadto sa 10-digit string nga naay leading zeros
+      const formattedOrderNumber = nextNumber.toString().padStart(10, '0');
+
+      // 3. I-save na ang bag-ong Order
       const nextOrderId = await this.getNextSequence('order_id');
 
       const newOrder = new this.orderModel({
         ...orderData,
         orderId: nextOrderId,
+        orderNumber: formattedOrderNumber,
         orderDate: new Date(),
         totalAmount: 0
       });
 
       await newOrder.save();
 
+      // --- Loop para sa items (pabilin gihapon ang imong karaan nga logic) ---
       let calculatedTotal = 0;
       for (const item of items) {
         const nextOrderItemId = await this.getNextSequence('order_item_id');
@@ -68,6 +87,7 @@ export class OrdersService {
         calculatedTotal += subtotal;
       }
 
+      // Update sa totalAmount sa Order
       const savedOrder = await this.orderModel.findOneAndUpdate(
         { orderId: nextOrderId },
         { $set: { totalAmount: calculatedTotal } },
@@ -81,12 +101,55 @@ export class OrdersService {
       return { message: 'Order created!', order: savedOrder };
 
     } catch (error) {
-      console.error("ERROR SA CREATE ORDER:", error.message); // Mo-gawas ni sa terminal
-      throw new InternalServerErrorException(error.message); // Mo-gawas ni sa Thunder Client
+      console.error("ERROR SA CREATE ORDER:", error.message);
+      throw new InternalServerErrorException(error.message);
     }
   }
 
   // --- UPDATE ITEM LOGIC ---
+  async createOrderItem(data: any): Promise<any> {
+    // 1. I-check kon ang item (itemId) naa na ba sa cart (orderId)
+    let existingItem = await this.orderItemModel.findOne({
+      orderId: data.orderId,
+      itemId: data.itemId
+    }).exec();
+
+    if (existingItem) {
+      // KUNG NAA NA: Pun-an lang ang quantity ug i-update ang subtotal
+      existingItem.quantity += data.quantity || 1;
+      existingItem.subtotal = existingItem.quantity * existingItem.price;
+      await existingItem.save();
+
+      // I-update ang main order total amount
+      await this.updateOrderTotal(data.orderId);
+
+      return { message: 'Item quantity updated', item: existingItem };
+    } else {
+      // KUNG WALA PA: Maghimo og bag-ong order item record
+      const nextOrderItemId = await this.getNextSequence('order_item_id');
+      const subtotal = data.price * (data.quantity || 1);
+
+      const newOrderItem = new this.orderItemModel({
+        ...data,
+        orderItemId: nextOrderItemId,
+        subtotal: subtotal
+      });
+
+      const savedItem = await newOrderItem.save();
+
+      // I-update ang main order total amount
+      await this.updateOrderTotal(data.orderId);
+
+      return { message: 'Item added to order', item: savedItem };
+    }
+  }
+
+  // I-add usab kini para makuha ang listahan sa items para sa UI
+  async findItemsByOrderId(orderId: number) {
+    return this.orderItemModel.find({ orderId }).exec();
+  }
+
+
   async updateOrderItem(orderItemId: number, updateData: any) {
     const item = await this.orderItemModel.findOneAndUpdate(
       { orderItemId },
@@ -151,5 +214,18 @@ export class OrdersService {
     }
 
     return deleteResult;
+  }
+
+  // orders.service.ts
+  async findActiveByTable(tableId: number): Promise<any> {
+    const order = await this.orderModel.findOne({
+      tableId: Number(tableId),
+      isBilledOut: false
+    }).exec();
+
+    if (!order) {
+      throw new NotFoundException('No active order found for this table');
+    }
+    return order;
   }
 }

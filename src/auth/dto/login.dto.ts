@@ -12,9 +12,9 @@ export class LoginDto {
 
     @IsNumber()
     @IsNotEmpty()
-    terminalId: number; // ID sa database
+    terminalId: number;
 
     @IsString()
     @IsNotEmpty()
-    terminalNumber: string; // E.g., "TERM-01"
+    terminalNumber: string;
 }

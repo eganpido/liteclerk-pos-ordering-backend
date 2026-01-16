@@ -10,17 +10,16 @@ export class AuthService {
         private jwtService: JwtService,
     ) { }
 
-    // Gidugangan nato og terminalId ug terminalNumber ang parameters
     async login(username: string, pass: string, terminalId: number, terminalNumber: string) {
         const user = await this.usersService.findOneByUsername(username);
 
         if (!user) {
-            throw new UnauthorizedException('Invalid credentials (Username not found)');
+            throw new UnauthorizedException('Username not found');
         }
 
         const isMatch = await bcrypt.compare(pass, user.password);
         if (!isMatch) {
-            throw new UnauthorizedException('Invalid credentials (Invalid password)');
+            throw new UnauthorizedException('Invalid password');
         }
 
         const payload = {

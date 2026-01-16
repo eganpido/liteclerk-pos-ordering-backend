@@ -28,9 +28,9 @@ class OrderItemDto {
 }
 
 export class CreateOrderDto {
-    @IsOptional()
+    @IsNotEmpty()
     @IsNumber()
-    orderId?: number;
+    orderId: number;
 
     @IsNotEmpty()
     @IsNumber()
