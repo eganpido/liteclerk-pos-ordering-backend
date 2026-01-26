@@ -29,19 +29,17 @@ export class OrdersController {
     return this.ordersService.remove(+id);
   }
 
-  // 2. Specific Order Items (Diri nato i-adjust ang paths)
   @Post('item')
   async addOrderItem(@Body() orderItemDto: any) {
     return this.ordersService.createOrderItem(orderItemDto);
   }
 
-  // I-add usab kini aron makuha ang tanang items sa usa ka order
   @Get(':id/items')
   async getOrderItems(@Param('id') id: string) {
     return this.ordersService.findItemsByOrderId(+id);
   }
 
-  @Patch('item/:orderItemId') // Gigamitan og 'item/' prefix para dili mag-conflict sa Order update
+  @Patch('item/:orderItemId')
   updateItem(
     @Param('orderItemId') orderItemId: string,
     @Body() updateData: any
@@ -49,13 +47,26 @@ export class OrdersController {
     return this.ordersService.updateOrderItem(+orderItemId, updateData);
   }
 
-  @Delete('item/:orderItemId') // Gigamitan og 'item/' prefix
+  @Delete('item/:orderItemId')
   removeItem(@Param('orderItemId') orderItemId: string) {
     return this.ordersService.removeOrderItem(+orderItemId);
+  }
+
+  @Delete('items/:orderId')
+  async removeAllItemsByOrder(@Param('orderId') orderId: string) {
+    return this.ordersService.removeOrderItems(+orderId);
   }
 
   @Get('active/:tableId')
   async getActive(@Param('tableId') tableId: number) {
     return this.ordersService.findActiveByTable(tableId);
+  }
+
+  @Delete('reset-table/:orderId/:tableId')
+  async resetTable(
+    @Param('orderId') orderId: number,
+    @Param('tableId') tableId: number
+  ) {
+    return this.ordersService.resetTable(+orderId, +tableId);
   }
 }

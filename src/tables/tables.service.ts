@@ -62,8 +62,8 @@ export class TablesService {
 
   async updateStatus(tableId: number, status: string) {
     const updatedTable = await this.tableModel.findOneAndUpdate(
-      { tableId: tableId }, // Pangitaa ang table gamit ang ID
-      { $set: { status: status } }, // I-update ang status (Occupied o Available)
+      { tableId: tableId },
+      { $set: { status: status } },
       { new: true }
     ).exec();
 
