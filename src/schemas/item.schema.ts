@@ -13,6 +13,9 @@ export class Item extends Document {
     price: number;
 
     @Prop({ default: true })
+    isInventory: boolean;
+
+    @Prop({ default: true })
     isLocked: boolean;
 }
 

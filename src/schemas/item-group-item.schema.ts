@@ -7,6 +7,9 @@ export class ItemGroupItem extends Document {
     itemGroupItemId: number;
 
     @Prop({ required: true })
+    posItemGroupItemId: number;
+
+    @Prop({ required: true })
     itemGroupId: number;
 
     @Prop({ required: true })

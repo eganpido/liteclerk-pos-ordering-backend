@@ -6,6 +6,9 @@ export class User extends Document {
     @Prop({ required: true, unique: true, index: true })
     userId: number;
 
+    @Prop({ required: true })
+    posUserId: number;
+
     @Prop({ required: true, unique: true, trim: true })
     username: string;
 

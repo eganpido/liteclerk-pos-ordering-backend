@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ItemGroup } from '../schemas/item-group.schema';
@@ -27,6 +27,29 @@ export class ItemGroupsService {
     return newGroup.save();
   }
 
+  async createMany(createItemGroupDtos: CreateItemGroupDto[]): Promise<any> {
+    // 1. Makuha ang pinaka-ulahing ID gikan sa database
+    const lastGroup = await this.itemGroupModel
+      .findOne()
+      .sort({ itemGroupId: -1 })
+      .exec();
+
+    let nextId = lastGroup ? lastGroup.itemGroupId + 1 : 1;
+
+    // 2. I-map ang matag DTO ug dugangan sa nakalkula nga itemGroupId
+    const groupsWithIds = createItemGroupDtos.map((dto) => {
+      const group = {
+        ...dto,
+        itemGroupId: nextId,
+      };
+      nextId++; // I-increment para sa sunod nga item sa array
+      return group;
+    });
+
+    // 3. I-save silang tanan sa usa ka bulk operation
+    return await this.itemGroupModel.insertMany(groupsWithIds);
+  }
+
   async findAll(): Promise<ItemGroup[]> {
     return this.itemGroupModel.find({ isLocked: true }).sort({ sortNumber: 1 }).exec();
   }
@@ -50,11 +73,23 @@ export class ItemGroupsService {
     return updatedGroup;
   }
 
-  async remove(itemGroupId: number) {
-    const result = await this.itemGroupModel.deleteOne({ itemGroupId }).exec();
-    if (result.deletedCount === 0) {
-      throw new NotFoundException(`Item Group with ID ${itemGroupId} not found`);
+  async remove(id: number): Promise<any> {
+    if (isNaN(id)) {
+      throw new BadRequestException("Cannot delete: ID is not a number (NaN)");
     }
-    return { deleted: true };
+
+    const result = await this.itemGroupModel.deleteOne({ itemGroupId: id }).exec();
+    return result;
+  }
+
+  async removeMany(ids: number[]): Promise<any> {
+    const result = await this.itemGroupModel.deleteMany({
+      posItemGroupId: { $in: ids }
+    }).exec();
+
+    return {
+      statusCode: 200,
+      message: `Successfully deleted ${result.deletedCount} items`
+    };
   }
 }

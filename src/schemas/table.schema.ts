@@ -7,13 +7,13 @@ export class Table extends Document {
     tableId: number;
 
     @Prop({ required: true })
+    posTableId: number;
+
+    @Prop({ required: true })
     tableCode: string;
 
     @Prop({ required: true })
     tableGroupId: number;
-
-    @Prop({ default: false })
-    isLocked: boolean;
 
     @Prop()
     sortNumber: number;

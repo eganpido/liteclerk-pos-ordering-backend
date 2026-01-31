@@ -7,10 +7,10 @@ export class ItemGroup extends Document {
     itemGroupId: number;
 
     @Prop({ required: true, unique: true })
-    itemGroup: string;
+    posItemGroupId: number;
 
-    @Prop({ required: true })
-    sortNumber: number;
+    @Prop({ required: true, unique: true })
+    itemGroup: string;
 
     @Prop({ default: true })
     isLocked: boolean;

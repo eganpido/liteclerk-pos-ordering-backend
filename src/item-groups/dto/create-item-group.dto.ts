@@ -1,6 +1,6 @@
 export class CreateItemGroupDto {
+    posItemGroupId: number;
     itemGroup: string;
-    sortNumber: number;
     isLocked: boolean;
     imagePath?: string;
 }

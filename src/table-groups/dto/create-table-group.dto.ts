@@ -1,5 +1,5 @@
 export class CreateTableGroupDto {
+    posTableGroupId: number;
     tableGroup: string;
-    sortNumber: number;
     isLocked: boolean;
 }

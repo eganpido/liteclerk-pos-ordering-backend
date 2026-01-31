@@ -6,11 +6,11 @@ export class TableGroup extends Document {
     @Prop({ required: true, unique: true })
     tableGroupId: number;
 
+    @Prop({ required: true })
+    posTableGroupId: number;
+
     @Prop({ required: true, unique: true })
     tableGroup: string;
-
-    @Prop()
-    sortNumber: number;
 
     @Prop({ default: false })
     isLocked: boolean;
