@@ -64,30 +64,32 @@ export class ItemGroupItemsService {
   }
 
   async findByGroup(itemGroupId: number) {
-    // 
-    return this.mappingModel.aggregate([
+    const result = await this.mappingModel.aggregate([
       { $match: { itemGroupId: itemGroupId } },
       {
         $lookup: {
           from: 'items',
-          localField: 'posItemId',
-          foreignField: 'itemId',
+          localField: 'itemId',
+          foreignField: 'posItemId',
           as: 'itemDetails'
         }
       },
-      { $unwind: '$itemDetails' },
+      { $unwind: { path: '$itemDetails', preserveNullAndEmptyArrays: false } },
       {
         $project: {
           _id: 0,
           itemGroupItemId: 1,
           itemGroupId: 1,
           itemId: 1,
+          posItemId: '$itemDetails.posItemId',
           itemDescription: '$itemDetails.itemDescription',
           price: '$itemDetails.price',
+          itemCode: '$itemDetails.itemCode',
           isLocked: '$itemDetails.isLocked'
         }
       }
     ]).exec();
+    return result;
   }
 
   async findAll() {

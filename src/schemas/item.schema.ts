@@ -7,6 +7,9 @@ export class Item extends Document {
     itemId: number;
 
     @Prop({ required: true })
+    posItemId: number;
+
+    @Prop({ required: true })
     itemDescription: string;
 
     @Prop({ required: true })

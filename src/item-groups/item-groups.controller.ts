@@ -12,7 +12,6 @@ export class ItemGroupsController {
     return this.itemGroupsService.create(createItemGroupDto);
   }
 
-  // Sa imong Controller
   @Post('bulk')
   createMany(@Body() createItemGroupDtos: CreateItemGroupDto[]) { // Dapat naay []
     return this.itemGroupsService.createMany(createItemGroupDtos);
@@ -33,20 +32,16 @@ export class ItemGroupsController {
     return this.itemGroupsService.update(+id, updateItemGroupDto);
   }
 
-  // 1. DAPAT MAG-UNA ANG BULK DELETE (Static Route)
   @Delete('bulk-delete')
   async removeMany(@Body('ids') ids: number[]) {
     console.log('Bulk delete hit! IDs:', ids);
     return await this.itemGroupsService.removeMany(ids);
   }
 
-  // 2. DAPAT MA-UWAHI ANG SINGLE DELETE (Dynamic Route)
   @Delete(':id')
   async remove(@Param('id') id: string) {
     const numericId = parseInt(id);
     if (isNaN(numericId)) {
-      // Kini ang imong nakit-an nga error log ganina!
-      // Nahitabo ni kay abi sa NestJS ang "bulk-delete" kay usa ka ID number.
       throw new BadRequestException('Invalid ID format');
     }
     return await this.itemGroupsService.remove(numericId);

@@ -28,7 +28,6 @@ export class ItemGroupsService {
   }
 
   async createMany(createItemGroupDtos: CreateItemGroupDto[]): Promise<any> {
-    // 1. Makuha ang pinaka-ulahing ID gikan sa database
     const lastGroup = await this.itemGroupModel
       .findOne()
       .sort({ itemGroupId: -1 })
@@ -36,17 +35,15 @@ export class ItemGroupsService {
 
     let nextId = lastGroup ? lastGroup.itemGroupId + 1 : 1;
 
-    // 2. I-map ang matag DTO ug dugangan sa nakalkula nga itemGroupId
     const groupsWithIds = createItemGroupDtos.map((dto) => {
       const group = {
         ...dto,
         itemGroupId: nextId,
       };
-      nextId++; // I-increment para sa sunod nga item sa array
+      nextId++;
       return group;
     });
 
-    // 3. I-save silang tanan sa usa ka bulk operation
     return await this.itemGroupModel.insertMany(groupsWithIds);
   }
 
